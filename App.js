@@ -9,7 +9,7 @@ import Orientation from "react-native-orientation";
 import SplashScreen from "./src/screen/SplashScreen";
 import MenuScreen from "./src/screen/MenuScreen";
 import ParametersScreen from "./src/screen/ParametersScreen";
-import SpriteRenderer from "./src/screen/SpriteRenderer";
+import GameRenderer from "./src/gui/GameRenderer";
 
 Orientation.lockToLandscape();
 
@@ -53,8 +53,8 @@ class App extends React.Component {
             <Router>
                 <Scene key="root">
                     <Scene
-                        key="spriterenderer"
-                        component={SpriteRenderer}
+                        key="gamerenderer"
+                        component={GameRenderer}
                         hideNavBar={true}/>
                     <Scene
                         key="login"

@@ -30,7 +30,7 @@ export default class World extends React.Component {
             <ScrollView>
                 <ScrollView horizontal>
                     <ImageBackground
-                        source={this.textureAtlas.getTexture(this.props.world.texture)}
+                        source={this.textureAtlas.getTexture(this.props.world.unitTexture)}
                         style={{width: this.props.world.width, height: this.props.world.height}}>
                         <View style={{width: this.props.world.width, height: this.props.world.height}}>
                             {this.props.world.buildings.map(building => {
