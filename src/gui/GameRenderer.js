@@ -1,82 +1,111 @@
 import React from "react";
-import WorldRenderer from "./WorldRenderer";
+import Sprite from "./Sprite";
+import {Animated, Easing, View} from "react-native";
+import Network from "../service/Network";
 
 
 export default class GameRenderer extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            world: {
-                level: 'world',
-                units: [
-                    {
-                        type: 'mage',
-                        direction: 'sw',
-                        action: {
-                            name: 'walking',
-                            totalTime: 0,
-                            currentTime: 0
-                        },
-                        coords: {
-                            x: 166,
-                            y: 55,
-                            w: 33,
-                            h: 49
-                        }
+
+        let textures = {
+            "world": require('../../resources/world-sprite/world/world.png'),
+            "mage-sw-walking-0": require('../../resources/world-sprite/mage/sw/walking/0.png'),
+            "mage-sw-walking-1": require('../../resources/world-sprite/mage/sw/walking/1.png'),
+            "mage-se-walking-0": require('../../resources/world-sprite/mage/se/walking/0.png'),
+            "mage-se-walking-1": require('../../resources/world-sprite/mage/se/walking/1.png'),
+            "mage-nw-walking-0": require('../../resources/world-sprite/mage/nw/walking/0.png'),
+            "mage-nw-walking-1": require('../../resources/world-sprite/mage/nw/walking/1.png'),
+            "mage-ne-walking-0": require('../../resources/world-sprite/mage/ne/walking/0.png'),
+            "mage-ne-walking-1": require('../../resources/world-sprite/mage/ne/walking/1.png')
+        };
+
+        let network = new Network();
+        network.createGame("SOLO", 2)
+            .then((game) => {
+                network.joinGame(game.id);
+                network.onmessage((message) => {
+                    if (message.action === "game-updated") {
+                        let newGame = JSON.parse(message.payload);
+                        console.log(newGame);
+                        newGame.world.sprites.forEach(s => {
+                            s.texture = textures[s.texture]
+                        });
+                        this.setState({game: newGame})
                     }
-                ],
-                coords: {
-                    x: 0,
-                    y: 0,
-                    w: 1200,
-                    h: 709
+                });
+            });
+        this.state = {
+            game: {
+                world: {
+                    sprites: []
                 }
             }
         };
-        setInterval(() => {
-            let world = {...this.state.world};
-            world.units.forEach(unit => {
-                unit.coords.x = this.randomMoveX(unit.coords.x, this.state.world.coords.w);
-                unit.coords.y = this.randomMoveY(unit.coords.y, this.state.world.coords.h);
-            });
-            this.setState({world});
-        }, 1000);
+        this.shakingAnimation = new Animated.ValueXY({x: 0, y: 0})
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.game.world.shaking !== this.state.game.world.shaking) {
+            console.log("shaking");
+            this.shake()
+        }
     }
 
     render() {
-
-        let textures = {};
-        textures["mage-sw-walking-0"] = require('../../resources/world-sprite/mage/sw/walking/0.png');
-        textures["world"] = require('../../resources/world-sprite/world/world.png');
-
-        return (<WorldRenderer textures={textures} world={this.state.world}/>)
+        return (
+            <Animated.View style={[ this.shakingAnimation.getLayout()]}>
+                {this.state.game.world.sprites.map((sprite, index) => {
+                    return (<Sprite key={index} texture={sprite.texture} coords={sprite.coords}/>)
+                })}
+            </Animated.View>
+        )
     }
 
-    randomIntFromInterval(min, max) { // min and max included
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
 
-    randomMoveX(x, maxX) {
-        let range = [-50, 50];
-        let newX = x + range[this.randomIntFromInterval(0, 1)];
-        if (newX <= 0) {
-            newX += 50;
-        } else if (newX >= maxX) {
-            newX -= 50;
-        }
-        return newX;
-    }
 
-    randomMoveY(y, maxY) {
-        let range = [-50, 50];
-        let newY = y + range[this.randomIntFromInterval(0, 1)];
-        if (newY <= 0) {
-            newY += 50;
-        } else if (newY >= maxY) {
-            newY -= 50;
-        }
-        return newY;
+    shake() {
+        Animated.loop(
+            // Animation consists of a sequence of steps
+            Animated.sequence([
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 10, y: 0},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 10, y: 10},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 0, y: 10},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 10, y: 0},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 10, y: 10},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 10, y: 0},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 0, y: 10},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 10, y: 0},
+                    duration: 150
+                }),
+                Animated.spring(this.shakingAnimation, {
+                    toValue: {x: 0, y: 0},
+                    duration: 150
+                })
+            ])
+        ).start();
     }
-
 }

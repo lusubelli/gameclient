@@ -3,8 +3,7 @@ import {ActivityIndicator, FlatList, StyleSheet, Text, View} from 'react-native'
 
 import {Actions} from 'react-native-router-flux';
 import GuiButton from "../gui/GuiButton";
-
-const SERVER_URL = 'http://192.168.1.26:8080/games';
+import Network from "../service/Network";
 
 class GameResume extends React.Component {
 
@@ -39,8 +38,8 @@ export default class MultiPlayersScreen extends React.Component {
     }
 
     componentDidMount() {
-        return fetch(SERVER_URL)
-            .then((response) => response.json())
+        return new Network()
+            .listGames()
             .then((responseJson) => {
                 this.setState({
                     games: responseJson
@@ -52,9 +51,8 @@ export default class MultiPlayersScreen extends React.Component {
     }
 
     createGame() {
-        let options = { method: 'post' }
-        fetch(SERVER_URL, options)
-            .then((response) => response.json())
+        new Network()
+            .createGame("MULTI", 2)
             .then((game) => {
                 Actions.game({
                     gameId: game.id

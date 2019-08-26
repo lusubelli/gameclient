@@ -9,10 +9,6 @@ export default class Sprite extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log("previous:");
-        console.log(prevProps.coords);
-        console.log("current:");
-        console.log(this.props.coords);
         if (prevProps.coords.x !== this.props.coords.x
             || prevProps.coords.y !== this.props.coords.y) {
             this.moveTo(this.props.coords.x, this.props.coords.y)

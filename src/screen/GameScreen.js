@@ -2,13 +2,11 @@ import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import {Actions} from "react-native-router-flux";
 import World from "../world/World";
-
-const SERVER_URL = 'ws://192.168.1.26:8080/games';
+import Network from "../service/Network";
 
 export default class GameScreen extends React.Component {
 
     color;
-    websocket;
 
     constructor(props) {
         super(props)
@@ -42,14 +40,9 @@ export default class GameScreen extends React.Component {
     }
 
     connection(gameId) {
-        this.websocket = new WebSocket(SERVER_URL + "/" + gameId);
-        this.websocket.onopen = () => {
-            // connection opened
-
-        };
-        this.websocket.onmessage = (e) => {
-            // a message was received
-            let message = JSON.parse(e.data);
+        let network = new Network();
+        network.joinGame(gameId, gameId);
+        network.onmessage((message) => {
             if (message.action === "player-joined") {
                 console.log("A player has joined the game");
                 this.color = JSON.parse(message.payload);
@@ -62,15 +55,7 @@ export default class GameScreen extends React.Component {
                 console.log("Je connais pas ce message " + message.action);
                 console.log(message.message);
             }
-        };
-        this.websocket.onerror = (e) => {
-            // an error occurred
-            console.error(e.message, e);
-        };
-        this.websocket.onclose = (e) => {
-            // connection closed
-            console.log(e);
-        };
+        });
     }
 
     leftGame() {
