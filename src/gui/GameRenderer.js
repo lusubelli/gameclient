@@ -10,7 +10,8 @@ export default class GameRenderer extends React.Component {
         super(props);
 
         let textures = {
-            "world": require('../../resources/world-sprite/world/world.png'),
+            "world-0": require('../../resources/world-sprite/world/world.png'),
+            "world-1": require('../../resources/world-sprite/world/world.png'),
             "mage-sw-walking-0": require('../../resources/world-sprite/mage/sw/walking/0.png'),
             "mage-sw-walking-1": require('../../resources/world-sprite/mage/sw/walking/1.png'),
             "mage-se-walking-0": require('../../resources/world-sprite/mage/se/walking/0.png'),
@@ -24,13 +25,18 @@ export default class GameRenderer extends React.Component {
         let network = new Network();
         network.createGame("SOLO", 2)
             .then((game) => {
+                var index = 0;
                 network.joinGame(game.id);
                 network.onmessage((message) => {
                     if (message.action === "game-updated") {
                         let newGame = JSON.parse(message.payload);
                         console.log(newGame);
                         newGame.world.sprites.forEach(s => {
-                            s.texture = textures[s.texture]
+                            s.texture = textures[s.texture + "-" + index]
+                            index++;
+                            if(index === 2) {
+                                index = 0;
+                            }
                         });
                         this.setState({game: newGame})
                     }
@@ -66,6 +72,7 @@ export default class GameRenderer extends React.Component {
 
 
     shake() {
+        /*
         Animated.loop(
             // Animation consists of a sequence of steps
             Animated.sequence([
@@ -106,6 +113,6 @@ export default class GameRenderer extends React.Component {
                     duration: 150
                 })
             ])
-        ).start();
+        ).start();*/
     }
 }
