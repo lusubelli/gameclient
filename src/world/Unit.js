@@ -1,7 +1,7 @@
 import {Animated, View, Image, ImageBackground} from "react-native";
 import React from "react";
 import HealthBar from "./HealthBar";
-import Sprite from "../gui/Sprite";
+import TexturedSprite from "../gui/TexturedSprite";
 
 export default class Unit extends React.Component {
 
@@ -46,11 +46,11 @@ export default class Unit extends React.Component {
                 unit.color,
                 unit.width,
                 unit.height), this.moveAnimation.getLayout()]}>
-                <Sprite definition={definition}>
+                <TexturedSprite definition={definition}>
                     <View>
                         <HealthBar width={unit.width} health={unit.health}/>
                     </View>
-                </Sprite>
+                </TexturedSprite>
             </Animated.View>
         )
     }
