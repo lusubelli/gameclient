@@ -36,19 +36,19 @@ class App extends React.Component {
     async componentDidMount() {
         // Preload data from an external API
         // Preload data using AsyncStorage
-        const data = await this.performTimeConsumingTask();
+        /*const data = await this.performTimeConsumingTask();
 
         if (data !== null) {
             this.setState({loading: false});
-        }
+        }*/
     }
 
     render() {
-
+/*
         if (this.state.loading) {
             return <SplashScreen/>;
         }
-
+*/
         return (
             <Router>
                 <Scene key="root">

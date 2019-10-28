@@ -43,7 +43,6 @@ export default class GameRenderer extends React.Component {
             if (this.scrollViewHorizontal && this.scrollViewVertical) {
                 let x = item.coords.x * 2 - (Dimensions.get('window').width / 2);
                 let y = item.coords.y * 2 - (Dimensions.get('window').height / 2);
-                console.log(x)
                 this.scrollViewHorizontal.scrollTo({x: x, y: 0, animated: true});
                 this.scrollViewVertical.scrollTo({x: 0, y: y, animated: true});
             }
